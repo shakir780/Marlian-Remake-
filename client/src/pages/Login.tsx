@@ -1,9 +1,46 @@
-import React from "react";
+import { useState } from "react";
 import RegisterBg from "../assets/leon-elldot-C8Q_zR8PDlA-unsplash.jpg";
 import { FaHouse } from "react-icons/fa6";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {
+  signInStart,
+  signInFailure,
+  signInSuccess,
+} from "../redux/user/userSlice";
 const Login = () => {
+  const [formData, setFormData] = useState({});
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      dispatch(signInStart());
+      const res = await fetch("/api/auth/signIn", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(signInFailure(data.message));
+        return;
+      }
+      dispatch(signInSuccess(data));
+      navigate("/");
+    } catch (error) {
+      dispatch(signInFailure((error as Error).message));
+    }
+  };
   return (
     <div className="">
       <div className="relative flex flex-col items-center">
@@ -49,15 +86,17 @@ const Login = () => {
             <div>
               <span className="font-bold">Returning Customer</span>
             </div>
-            <form className="mt-4 flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
               <div className="flex flex-col gap-4 ">
                 <label className="">
                   {" "}
                   <span className="text-red-600">*</span> Email Address
                 </label>
                 <input
+                  id="email"
                   className="border border-gray-300 w-[300px]  h-[38px] rounded-lg"
                   type="text"
+                  onChange={handleChange}
                 />
               </div>
               <div className="flex flex-col gap-4 ">
@@ -66,11 +105,15 @@ const Login = () => {
                   <span className="text-red-600">*</span> Password
                 </label>
                 <input
+                  id="password"
                   className="border border-gray-300 w-[300px]  h-[38px] rounded-lg"
                   type="text"
+                  onChange={handleChange}
                 />
               </div>
-              <span className="text-white bg-black px-6 w-fit py-2">Login</span>
+              <button className="text-white cursor-pointer bg-black px-6 w-fit py-2">
+                Login
+              </button>
             </form>
           </div>
         </div>

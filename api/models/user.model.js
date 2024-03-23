@@ -23,6 +23,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    subscribe: {
+      type: Boolean,
+      required: true,
+    },
+    policy: {
+      type: Boolean,
+      required: true,
+    },
   },
   { timestamps: true }
 );

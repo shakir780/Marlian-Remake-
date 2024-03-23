@@ -1,10 +1,63 @@
-import React from "react";
+import React, { useState } from "react";
 import RegisterBg from "../assets/leon-elldot-C8Q_zR8PDlA-unsplash.jpg";
 import { FaHouse } from "react-icons/fa6";
+
+interface FormData {
+  subscribe: boolean;
+  policy: boolean;
+  password?: string; // Make these optional if they might not be present initially
+  confirmpassword?: string; // Make these optional if they might not be present initially
+  // Add other fields as needed
+}
 const Register = () => {
+  const [formData, setFormData] = useState<FormData>({
+    subscribe: false,
+    policy: false,
+  });
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    setFormData({
+      ...formData,
+      [e.target.id]: value,
+    });
+  };
+  console.log(formData.password === formData.confirmpassword);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (formData?.password !== formData?.confirmpassword) {
+      console.log("Password must match");
+    }
+
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        setLoading(false);
+        setError(data.message);
+        return;
+      }
+      setLoading(false);
+      setError(null);
+    } catch (error) {
+      setLoading(false);
+      setError((error as Error).message);
+    }
+  };
+
   return (
     <>
-      <div className="relative flex flex-col items-center">
+      <div className="relative flex flex-col items-center ">
         <img
           src={RegisterBg}
           style={{ filter: "brightness(40%)" }}
@@ -26,8 +79,8 @@ const Register = () => {
           </div>
         </div>
       </div>
-      <div className="md:max-w-[900px] py-10 mx-auto ">
-        <div className="flex flex-col gap-4 ">
+      <div className="md:max-w-[900px]  py-10 mx-auto  px-4 ">
+        <div className="flex flex-col gap-4  ">
           <span className="text-gray-400">
             If you already have an account with us, please login at the login
             page.
@@ -35,83 +88,114 @@ const Register = () => {
           <span className="text-lg font-semibold">Your Personal Details</span>
           <hr />
         </div>
-        <form className="mt-6">
+        <form onSubmit={handleSubmit} className="mt-6">
           <div className="flex flex-col gap-4">
-            <div className="flex gap-4 items-center justify-between">
+            <div className="flex gap-4  md:items-center md:flex-row flex-col justify-between">
               <label className="">
                 {" "}
                 <span className="text-red-600">*</span> First Name
               </label>
               <input
-                className="border border-gray-300 w-[300px] md:w-[700px] h-[38px] rounded-lg"
+                onChange={handleChange}
+                id="firstName"
+                className=" px-3 text-gray-500 text-gray- border border-gray-30 md:w-[700px] h-[38px] rounded-lg"
                 type="text"
               />
             </div>
-            <div className="flex gap-4 items-center justify-between">
+            <div className="flex gap-4  md:items-center md:flex-row flex-col justify-between">
               <label className="">
                 {" "}
                 <span className="text-red-600">*</span> Last Name
               </label>
               <input
-                className="border border-gray-300 w-[300px] md:w-[700px] h-[38px] rounded-lg"
+                onChange={handleChange}
+                className=" px-3 text-gray-500 text-gray- border border-gray-30 md:w-[700px] h-[38px] rounded-lg"
                 type="text"
+                id="lastName"
               />
             </div>
-            <div className="flex gap-4 items-center justify-between">
+            <div className="flex gap-4  md:items-center md:flex-row flex-col justify-between">
               <label className="">
                 {" "}
                 <span className="text-red-600">*</span> Email
               </label>
               <input
-                className="border border-gray-300 w-[300px] md:w-[700px] h-[38px] rounded-lg"
+                onChange={handleChange}
+                id="email"
+                className=" px-3 text-gray-500 text-gray- border border-gray-30 md:w-[700px] h-[38px] rounded-lg"
                 type="text"
               />
             </div>
-            <div className="flex gap-4 items-center justify-between">
+            <div className="flex gap-4  md:items-center md:flex-row flex-col justify-between">
               <label className="">
                 {" "}
                 <span className="text-red-600">*</span> Telephone number
               </label>
               <input
-                className="border border-gray-300 w-[300px] md:w-[700px] h-[38px] rounded-lg"
+                onChange={handleChange}
+                id="telephone"
+                className=" px-3 text-gray-500 text-gray- border border-gray-30 md:w-[700px] h-[38px] rounded-lg"
                 type="text"
               />
             </div>
             <span className="text-lg font-semibold">Your Password</span>
             <hr />
-            <div className="flex gap-4 items-center justify-between">
+            <div className="flex gap-4  md:items-center md:flex-row flex-col justify-between">
               <label className="">
                 {" "}
                 <span className="text-red-600">*</span>Password
               </label>
               <input
-                className="border border-gray-300 w-[300px] md:w-[700px] h-[38px] rounded-lg"
-                type="text"
+                onChange={handleChange}
+                id="password"
+                className=" px-3 text-gray-500 text-gray- border border-gray-30 md:w-[700px] h-[38px] rounded-lg"
+                type="password"
               />
             </div>
-            <div className="flex gap-4 items-center justify-between">
+            <div className="flex gap-4  md:items-center md:flex-row flex-col justify-between">
               <label className="">
                 {" "}
                 <span className="text-red-600">*</span> Confirm Password
               </label>
               <input
-                className="border border-gray-300 w-[300px] md:w-[700px] h-[38px] rounded-lg"
-                type="text"
+                onChange={handleChange}
+                id="confirmpassword"
+                className="px-3  border border-gray-30 md:w-[700px] h-[38px] rounded-lg"
+                type="password"
               />
             </div>
             <span className="text-lg font-semibold">NewsLetter</span>
             <hr />
-            <div className="flex gap-4 items-center justify-between">
+            <div className="flex gap-4  md:items-center md:flex-row flex-col ">
               <label className="">
-                {" "}
-                <span className="text-red-600">*</span> Subscribe
+                <span className="text-red-600">*</span> Subscribe to our weekly
+                newsletter
               </label>
               <div className="flex items-center gap-4 ">
-                <label>Yes</label>
-                <input className="border border-gray-300   " type="radio" />
-                <label>No</label>
-                <input className="border border-gray-300   " type="radio" />
+                <input
+                  id="subscribe"
+                  className="border border-gray-300"
+                  type="checkbox"
+                  checked={formData?.subscribe}
+                  onChange={handleChange}
+                />
               </div>
+            </div>
+            <div className="justify-between gap-7 flex items-center mt-7 ">
+              <div className="flex gap-4">
+                <span>I have read and agree to the Privacy Policy </span>
+                <span>
+                  <input
+                    type="checkbox"
+                    id="policy"
+                    checked={formData?.policy}
+                    onChange={handleChange}
+                  />
+                </span>
+              </div>
+              <button className="text-white bg-black px-8 w-fit py-2 cursor-pointer hover:text-gray-400">
+                Register
+              </button>
             </div>
           </div>
         </form>
