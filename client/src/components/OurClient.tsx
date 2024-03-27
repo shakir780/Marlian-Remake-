@@ -10,13 +10,13 @@ const OurClient = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-      className="h-[100vh] lg:h-fit py-32  justify-start "
+      className="h-[100vh] lg:h-fit py-32  justify-start"
     >
       <div className="mt-16 flex flex-col items-center justify-center gap-2 lg:gap-8 capitalize px-3 lg:px-10">
         <span className="font-semibold text-4xl text-center text-white">
           Our Client says
         </span>
-        <div className="w-[900px] h-[350px] bg-white shadow-xl flex py-8 flex-col   gap-4 justify-center">
+        <div className="md:w-[900px]  h-[350px] bg-white shadow-xl flex py-8 flex-col   gap-4 justify-center">
           <span className="text-6xl text-center self-center">
             <ImQuotesLeft />
           </span>

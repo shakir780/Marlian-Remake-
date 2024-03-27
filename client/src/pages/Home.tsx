@@ -1,3 +1,7 @@
+import Companies from "../components/Companies";
+import FeaturedProducts from "../components/FeaturedProducts";
+import Footer from "../components/Footer";
+import GetApp from "../components/GetApp";
 import Hero from "../components/Hero";
 import NewProducts from "../components/NewProducts";
 import OurClient from "../components/OurClient";
@@ -14,6 +18,10 @@ const Home = () => {
       <NewProducts />
       <OurClient />
       <Perks />
+      <FeaturedProducts />
+      <GetApp />
+      <Companies />
+      <Footer />
     </div>
   );
 };

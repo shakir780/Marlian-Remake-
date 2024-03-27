@@ -13,13 +13,13 @@ const Perks = () => {
   const PerksComp = ({ icon, title, sub }: PerksCompProps) => (
     <div className="flex flex-col gap-2 items-center">
       <span className="text-4xl">{icon}</span>
-      <span className="font-semibold capitalize">{title}</span>
+      <span className="font-semibold capitalize text-center">{title}</span>
       <span className="text-gray-400 text-center">{sub}</span>
     </div>
   );
   return (
-    <div className="max-w-[1460px] h-[100vh] lg:h-fit py-32">
-      <div className=" mx-auto grid grid-cols-2 px-10 md:grid-cols-3  gap-10 justify-center items-center ">
+    <div className="md:max-w-[1460px] h-fit lg:h-fit py-32">
+      <div className=" md:mx-auto grid grid-cols-2 px-3 md:px-10 md:grid-cols-3  gap-10 justify-center items-center">
         <PerksComp
           icon={<BsSend />}
           title="Worldwide Shipping"
