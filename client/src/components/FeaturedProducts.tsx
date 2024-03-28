@@ -101,7 +101,11 @@ const FeaturedProducts = () => {
         <div className="w-20 h-1 bg-black" />
       </div>
 
-      <div className="relative flex gap-2 pl-24 items-center ">
+      <div
+        className={`relative flex gap-2 ${
+          slidesPerView < 2 && "pl-10"
+        }  pl-24 items-center`}
+      >
         <Swiper
           slidesPerView={slidesPerView}
           pagination={{ clickable: true }}

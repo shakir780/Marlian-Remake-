@@ -14,7 +14,7 @@ const PopularProducts = () => {
           <div className="w-20 h-1 bg-black" />
         </div>
 
-        <div className="md:flex hidden ">
+        <div className="flex ">
           <img src={img5} className="w-[280px] h-[280px] object-cover" alt="" />
           <img src={img2} className="w-[280px] h-[280px] object-cover" alt="" />
           <img src={img3} className="w-[280px] h-[280px] object-cover" alt="" />

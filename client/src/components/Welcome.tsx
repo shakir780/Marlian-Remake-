@@ -3,7 +3,7 @@ import WelcomePic from "../assets/pexels-photo-935985.webp";
 const Welcome = () => {
   return (
     <>
-      <div className="h-[100vh] md:h-fit py-32 flex md:flex-row flex-col gap-7 mt-20 md:mt-0 px-4 justify-around items-center">
+      <div className="h-[120vh] md:h-fit py-32  flex md:flex-row flex-col gap-7 mt-20 md:mt-0 px-4 justify-around items-center">
         <div>
           <div className="flex flex-col gap-11 items-center">
             <div className="flex flex-col items-center gap-6">
