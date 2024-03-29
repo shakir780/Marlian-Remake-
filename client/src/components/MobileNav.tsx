@@ -37,7 +37,7 @@ const MobileNav = ({ setOpenMobileNav, openMobileNav }: MobileNavProps) => {
   };
 
   return (
-    <div className="flex justify-center absolute z-40 w-full  ">
+    <div className="flex justify-center fixed z-40 w-full  ">
       <motion.div
         className="bg-white border border-gray-200 shadow-xl w-[80%] h-[200px]"
         initial="closed"

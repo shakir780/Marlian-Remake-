@@ -4,6 +4,7 @@ const initialState = {
   currentUser: null,
   error: null,
   loading: false,
+  openQuickView: false,
 };
 
 const userSlice = createSlice({
@@ -35,6 +36,9 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+    setOpenQuickView: (state, action) => {
+      state.openQuickView = action.payload;
+    },
   },
 });
 
@@ -44,6 +48,7 @@ export const {
   signUpSuccess,
   signUpFailure,
   signInFailure,
+  setOpenQuickView,
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,17 +1,36 @@
 import { useEffect, useRef, useState } from "react";
-import img1 from "../assets/Fp1.jpg";
-import img2 from "../assets/Fp2.jpg";
-import img3 from "../assets/Fp3.jpg";
-import img4 from "../assets/Fp4.jpg";
-import img5 from "../assets/Fp5.jpg";
-import img6 from "../assets/Fp6.jpg";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { MdOutlineNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
 import { CiHeart, CiShoppingCart, CiStar } from "react-icons/ci";
 import { FaEye } from "react-icons/fa";
+import QuickView from "./QuickView";
+import { FeatureProductsData } from "../constants";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
+import { setOpenQuickView } from "../redux/user/userSlice";
+type SlideData = {
+  img: string;
+  title: string;
+  stars: number;
+  price: number;
+  brand: string;
+  productCode: string;
+} | null;
+interface RootState {
+  user: {
+    openQuickView: boolean;
+    // Include other user state properties here
+  };
+  // Include other slices of state here
+}
 const FeaturedProducts = () => {
+  const dispatch = useDispatch();
+
   const [slidesPerView, setSlidesPerView] = useState(3);
+  // const [openQuickView, setOpenQuickView] = useState(false);
+  const [slidesData, setSlidesData] = useState<SlideData>(null);
 
   const goNext = () => {
     if (swiperRef.current) {
@@ -53,44 +72,17 @@ const FeaturedProducts = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const swiperRef = useRef<any>(null);
 
-  const slides = [
-    {
-      img: img1,
-      title: "Kids Sweater Orange",
-      stars: 5,
-      price: "$27.00",
-    },
-    {
-      img: img2,
-      title: "Lekan Blue Gold Adinkra",
-      stars: 5,
-      price: "$45.00",
-    },
-    {
-      img: img3,
-      title: "African Shift Dress In Black Dashiki",
-      stars: 5,
-      price: "$60.00",
-    },
-    {
-      img: img4,
-      title: "African T Shirt In Blue Kente",
-      stars: 5,
-      price: "$30.00",
-    },
-    {
-      img: img5,
-      title: "Traditional Top Black with Gold Embroidery",
-      stars: 5,
-      price: "$30.00",
-    },
-    {
-      img: img6,
-      title: "Traditional Shirt Blue Navy Mudcloth",
-      stars: 5,
-      price: "$30.00",
-    },
-  ];
+  const { openQuickView } = useSelector((state: RootState) => state.user);
+
+  const handleQuickView = (index: number) => {
+    dispatch(setOpenQuickView(true));
+    const clickedSlide = FeatureProductsData[index];
+    const updatedSlide = {
+      ...clickedSlide,
+      price: parseFloat(clickedSlide.price),
+    };
+    setSlidesData(updatedSlide);
+  };
 
   return (
     <div className="max-w-[1460px] h-fit py-20 mx-auto flex flex-col gap-10  ">
@@ -112,7 +104,7 @@ const FeaturedProducts = () => {
           navigation={false}
           onSwiper={(swiper) => (swiperRef.current = swiper)} // Store swiper instance using r
         >
-          {slides.map((slide, index) => (
+          {FeatureProductsData.map((slide, index) => (
             <SwiperSlide key={index}>
               <div className="flex flex-col">
                 <div className="overflow-hidden">
@@ -129,7 +121,10 @@ const FeaturedProducts = () => {
                       <span className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3">
                         <CiShoppingCart />
                       </span>
-                      <span className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3">
+                      <span
+                        onClick={() => handleQuickView(index)}
+                        className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3"
+                      >
                         <FaEye />
                       </span>
                     </div>
@@ -166,6 +161,20 @@ const FeaturedProducts = () => {
           <MdOutlineNavigateNext />
         </button>
       </div>
+      {openQuickView && (
+        <QuickView
+          slidesData={
+            slidesData as {
+              img: string;
+              title: string;
+              brand: string;
+              productCode: string;
+              price: number;
+            }
+          }
+          setOpenQuickView={setOpenQuickView}
+        />
+      )}
     </div>
   );
 };
