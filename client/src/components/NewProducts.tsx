@@ -1,17 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
-import img1 from "../assets/2aiexDIP0PEuEDh0_kidssweaterorange_400x.jpg";
-import img2 from "../assets/bJMvrYGrJRFL5W7b_Mens-Ireti-African-Print-Color-Blocked-Button-Up-Shirt-Black-Red-Kente-1_400x.jpg";
-import img3 from "../assets/comPtDZsokx7tdik_african-shift-dress-in-black-dashiki-890854_270x360_crop_center.jpg";
-import img4 from "../assets/uNlh9LJ0xwJERddV_african-t-shirt-in-blue-kente-207063_270x360_crop_center.jpg";
-import img5 from "../assets/RwbYCPy9iCszDtVc_Mens-Karim-Embroidered-Traditional-Top-Black-with-Gold-Embroidery_400x.jpg";
-import img6 from "../assets/YY4VjjvcappzmM1a_Mens-Ibrahim-African-Print-Traditional-Shirt-Blue-Navy-Mudcloth-1_5f751519-bcb2-4107-b727-7e65eb3d4bc1_400x.jpg";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
+import { useEffect, useRef, useState } from "react";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { MdOutlineNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
 import { CiHeart, CiShoppingCart, CiStar } from "react-icons/ci";
 import { FaEye } from "react-icons/fa";
-
+import QuickView from "./QuickView";
+import { NewProductsData, SlideData } from "../constants";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/user/cartSlice";
+import { addToWishlist } from "../redux/user/wishListSlice";
 const NewProducts = () => {
+  const dispatch = useDispatch();
   const [slidesPerView, setSlidesPerView] = useState(3);
+  const [slidesData, setSlidesData] = useState<SlideData>(null);
+  const [openQuickView, setOpenQuickView] = useState(false);
 
   const goNext = () => {
     if (swiperRef.current) {
@@ -53,45 +58,22 @@ const NewProducts = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const swiperRef = useRef<any>(null);
 
-  const slides = [
-    {
-      img: img1,
-      title: "Kids Sweater Orange",
-      stars: 5,
-      price: "$27.00",
-    },
-    {
-      img: img2,
-      title: "Lekan Blue Gold Adinkra",
-      stars: 5,
-      price: "$45.00",
-    },
-    {
-      img: img3,
-      title: "African Shift Dress In Black Dashiki",
-      stars: 5,
-      price: "$60.00",
-    },
-    {
-      img: img4,
-      title: "African T Shirt In Blue Kente",
-      stars: 5,
-      price: "$30.00",
-    },
-    {
-      img: img5,
-      title: "Traditional Top Black with Gold Embroidery",
-      stars: 5,
-      price: "$30.00",
-    },
-    {
-      img: img6,
-      title: "Traditional Shirt Blue Navy Mudcloth",
-      stars: 5,
-      price: "$30.00",
-    },
-  ];
+  // const { openQuickView } = useSelector((state: RootState) => state.user);
 
+  const handleQuickView = (index: number) => {
+    // dispatch(setOpenQuickView(true));
+    setOpenQuickView(true);
+    const clickedSlide = NewProductsData[index];
+    console.log("clickedd oo");
+    setSlidesData(clickedSlide);
+  };
+
+  const handleAddtoCart = (product) => {
+    dispatch(addToCart(product));
+  };
+  const handleAddtoWishList = (product) => {
+    dispatch(addToWishlist(product));
+  };
   return (
     <div className="max-w-[1460px] h-fit py-20 mx-auto flex flex-col gap-10  ">
       <div className="flex flex-col items-center gap-6">
@@ -110,7 +92,7 @@ const NewProducts = () => {
           navigation={false}
           onSwiper={(swiper) => (swiperRef.current = swiper)} // Store swiper instance using r
         >
-          {slides.map((slide, index) => (
+          {NewProductsData.map((slide, index) => (
             <SwiperSlide key={index}>
               <div className="flex flex-col">
                 <div className="overflow-hidden">
@@ -121,13 +103,22 @@ const NewProducts = () => {
                       alt=""
                     />
                     <div className="absolute top-4 right-4 flex flex-col items-end gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <span className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3">
+                      <span
+                        onClick={() => handleAddtoWishList(slide)}
+                        className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3"
+                      >
                         <CiHeart />
                       </span>
-                      <span className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3">
+                      <span
+                        onClick={() => handleAddtoCart(slide)}
+                        className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3"
+                      >
                         <CiShoppingCart />
                       </span>
-                      <span className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3">
+                      <span
+                        onClick={() => handleQuickView(index)}
+                        className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3"
+                      >
                         <FaEye />
                       </span>
                     </div>
@@ -143,7 +134,7 @@ const NewProducts = () => {
                     ))}
                   </div>
                   <span className="capitalize">{slide.title}</span>
-                  <span className="font-bold">{slide.price}</span>
+                  <span className="font-bold">${slide.price}</span>
                 </div>
               </div>
             </SwiperSlide>
@@ -164,6 +155,14 @@ const NewProducts = () => {
           <MdOutlineNavigateNext />
         </button>
       </div>
+      {openQuickView && (
+        <QuickView
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          slidesData={slidesData}
+          setOpenQuickView={setOpenQuickView}
+        />
+      )}
     </div>
   );
 };

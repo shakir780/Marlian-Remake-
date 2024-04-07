@@ -2,16 +2,22 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userReducer from "./user/userSlice.ts";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
+import cartSlice from "./user/cartSlice.ts";
+import wishListSlice from "./user/wishListSlice.ts";
 
-const rootReducer = combineReducers({ user: userReducer });
+const rootReducer = combineReducers({
+  user: userReducer,
+  cart: cartSlice,
+  wishList: wishListSlice,
+});
 
 const persistConfig = {
   key: "root",
   storage,
   version: 1,
 };
-const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>

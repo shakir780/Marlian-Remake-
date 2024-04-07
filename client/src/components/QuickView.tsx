@@ -1,6 +1,8 @@
 import { CiHeart, CiStar } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/user/cartSlice";
+import { addToWishlist } from "../redux/user/wishListSlice";
 
 interface QuickViewProps {
   slidesData: {
@@ -8,7 +10,7 @@ interface QuickViewProps {
     title: string;
     brand: string;
     productCode: string;
-    price: number;
+    price: string;
   };
   setOpenQuickView: (open: boolean) => void;
 }
@@ -18,6 +20,13 @@ const QuickView: React.FC<QuickViewProps> = ({
   setOpenQuickView,
 }) => {
   const dispatch = useDispatch();
+
+  const handleAddtoCart = (product) => {
+    dispatch(addToCart(product));
+  };
+  const handleAddtoWishList = (product) => {
+    dispatch(addToWishlist(product));
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -61,10 +70,16 @@ const QuickView: React.FC<QuickViewProps> = ({
 
             <span className="mt-4 font-bold text-lg">{slidesData?.price} </span>
             <div className="mt-6 flex gap-3">
-              <span className="px-4 text-white py-2 bg-black w-fit hover:bg-gray-600 cursor-pointer">
+              <span
+                onClick={() => handleAddtoCart(slidesData)}
+                className="px-4 text-white py-2 bg-black w-fit hover:bg-gray-600 cursor-pointer"
+              >
                 Add to cart
               </span>
-              <span className="bg-gray-500 cursor-pointer hover:bg-gray-300 px-2 py-2 w-fit text-white  self-center text-xl">
+              <span
+                onClick={() => handleAddtoWishList(slidesData)}
+                className="bg-gray-500 cursor-pointer hover:bg-gray-300 px-2 py-2 w-fit text-white  self-center text-xl"
+              >
                 <CiHeart />
               </span>
             </div>

@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { useEffect, useRef, useState } from "react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -5,33 +7,16 @@ import { MdOutlineNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
 import { CiHeart, CiShoppingCart, CiStar } from "react-icons/ci";
 import { FaEye } from "react-icons/fa";
 import QuickView from "./QuickView";
-import { FeatureProductsData } from "../constants";
+import { FeatureProductsData, SlideData } from "../constants";
 import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-
-import { setOpenQuickView } from "../redux/user/userSlice";
-type SlideData = {
-  img: string;
-  title: string;
-  stars: number;
-  price: number;
-  brand: string;
-  productCode: string;
-} | null;
-interface RootState {
-  user: {
-    openQuickView: boolean;
-    // Include other user state properties here
-  };
-  // Include other slices of state here
-}
+import { addToCart } from "../redux/user/cartSlice";
+import { addToWishlist } from "../redux/user/wishListSlice";
 const FeaturedProducts = () => {
   const dispatch = useDispatch();
 
   const [slidesPerView, setSlidesPerView] = useState(3);
-  // const [openQuickView, setOpenQuickView] = useState(false);
   const [slidesData, setSlidesData] = useState<SlideData>(null);
-
+  const [openQuickView, setOpenQuickView] = useState(false);
   const goNext = () => {
     if (swiperRef.current) {
       if (swiperRef.current.isEnd) {
@@ -72,18 +57,18 @@ const FeaturedProducts = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const swiperRef = useRef<any>(null);
 
-  const { openQuickView } = useSelector((state: RootState) => state.user);
-
   const handleQuickView = (index: number) => {
-    dispatch(setOpenQuickView(true));
+    setOpenQuickView(true);
     const clickedSlide = FeatureProductsData[index];
-    const updatedSlide = {
-      ...clickedSlide,
-      price: parseFloat(clickedSlide.price),
-    };
-    setSlidesData(updatedSlide);
-  };
 
+    setSlidesData(clickedSlide);
+  };
+  const handleAddtoCart = (product) => {
+    dispatch(addToCart(product));
+  };
+  const handleAddtoWishList = (product) => {
+    dispatch(addToWishlist(product));
+  };
   return (
     <div className="max-w-[1460px] h-fit py-20 mx-auto flex flex-col gap-10  ">
       <div className="flex flex-col items-center gap-6">
@@ -115,10 +100,16 @@ const FeaturedProducts = () => {
                       alt=""
                     />
                     <div className="absolute top-4 right-4 flex flex-col items-end gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <span className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3">
+                      <span
+                        onClick={() => handleAddtoWishList(slide)}
+                        className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3"
+                      >
                         <CiHeart />
                       </span>
-                      <span className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3">
+                      <span
+                        onClick={() => handleAddtoCart(slide)}
+                        className="bg-white hover:bg-red-400 hover:text-white cursor-pointer  px-3 py-3"
+                      >
                         <CiShoppingCart />
                       </span>
                       <span
@@ -140,7 +131,7 @@ const FeaturedProducts = () => {
                     ))}
                   </div>
                   <span className="capitalize">{slide.title}</span>
-                  <span className="font-bold">{slide.price}</span>
+                  <span className="font-bold">${slide.price}</span>
                 </div>
               </div>
             </SwiperSlide>
@@ -163,15 +154,9 @@ const FeaturedProducts = () => {
       </div>
       {openQuickView && (
         <QuickView
-          slidesData={
-            slidesData as {
-              img: string;
-              title: string;
-              brand: string;
-              productCode: string;
-              price: number;
-            }
-          }
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          slidesData={slidesData}
           setOpenQuickView={setOpenQuickView}
         />
       )}
