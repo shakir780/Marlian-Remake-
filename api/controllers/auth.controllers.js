@@ -31,11 +31,15 @@ export const signUp = async (req, res, next) => {
     // this saves it inside the database
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, {
+      // Set expiresIn to null or omit it to make the token not expire
+      expiresIn: "30d", // Token expires in 30 days
+    });
     const { password: pass, ...rest } = newUser._doc;
     res
       .cookie("access_token", token, {
         httpOnly: true,
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       })
       .status(201)
       .json(rest);
@@ -52,7 +56,10 @@ export const signIn = async (req, res, next) => {
     if (!validUser) return next(errorhandler(404, "User not found "));
     const validPassword = bcryptjs.compareSync(password, validUser.password);
     if (!validPassword) return next(errorhandler(404, "Wrong credentials"));
-    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, {
+      // Set expiresIn to null or omit it to make the token not expire
+      expiresIn: "30d", // Token expires in 30 days
+    });
     const { password: pass, ...rest } = validUser._doc;
     res
       .cookie("access_token", token, {
@@ -64,4 +71,25 @@ export const signIn = async (req, res, next) => {
   } catch (error) {
     next(200);
   }
+};
+
+export const logout = async (req, res, next) => {
+  try {
+    res.clearCookie("access_token");
+    res.status(200).json("User has been Logged out");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const checkAuthorization = (req, res, next) => {
+  console.log(req.cookies);
+  const token = req?.cookies?.access_token;
+  if (!token) return next(errorhandler(401, "Unauthorized"));
+  console.log(token.object, "ssss");
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return next(errorhandler(403, "Forbidden"));
+    req.user = user;
+    next();
+  });
 };

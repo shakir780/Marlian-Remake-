@@ -2,7 +2,9 @@ import express from "express";
 import mongoose from "mongoose";
 import authRouter from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
-
+import stripe from "./routes/stripe.route.js";
+import cartRouter from "./routes/cart.route.js";
+import wishlistRouter from "./routes/wishlist.route.js";
 import dotenv from "dotenv";
 dotenv.config();
 mongoose
@@ -15,6 +17,10 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/wishlist", wishlistRouter);
+app.use("/api/stripe", stripe);
+app.use;
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

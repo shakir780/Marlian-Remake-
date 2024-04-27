@@ -1,24 +1,35 @@
 import cartBG from "../assets/cartBg.webp";
 import { FaHouse } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { CiShoppingCart } from "react-icons/ci";
 
-import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/user/cartSlice";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import { removeFromWishList } from "../redux/user/wishListSlice";
+import useUserCart from "../components/UserCart";
+import UserWishlist from "../components/UserWishlist";
 
+interface WishListItem {
+  _id: string;
+
+  image: string;
+  price: number;
+  name: string;
+  productId: string;
+}
 const WishList = () => {
-  const dispatch = useDispatch();
-  const wishlist = useSelector((state) => state.wishList);
+  // const wishlist = useSelector((state) => state.wishList);
 
-  const handleAddtoCart = (product) => {
-    dispatch(addToCart(product));
+  const { addToCart } = useUserCart();
+  const { userwishList, RemoveFromWishList } = UserWishlist();
+
+  const handleAddtoCart = async (product: WishListItem) => {
+    console.log(product);
+    await addToCart(product);
   };
-  const handleRemoveFromWishList = (product) => {
-    dispatch(removeFromWishList(product));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleRemoveFromWishList = async (product: { _id: any }) => {
+    await RemoveFromWishList(product);
   };
+  console.log(userwishList);
   return (
     <div className="h-fit ">
       <div className="relative flex flex-col items-center ">
@@ -58,46 +69,54 @@ const WishList = () => {
           </thead>
           <tbody className="w-full">
             {/* Map through cart items and generate table rows */}
-            {wishlist?.wishListItems.map((item, index) => (
-              <tr key={index} className="border-b border-gray-200">
-                <td className="p-3 whitespace-nowrap border border-gray-200">
-                  <img
-                    src={item.img}
-                    alt={item.title}
-                    className="md:w-[120px] md:h-[120px] object-cover"
-                  />
-                </td>
-                <td className="p-3 whitespace-nowrap border border-gray-200">
-                  {item.title}
-                </td>
-                <td className="p-3 whitespace-nowrap border border-gray-200">
-                  {item.productCode}
-                </td>
-
-                <td className="p-3 whitespace-nowrap border border-gray-200">
-                  ${item.price}
-                </td>
-
-                <td className="p-3 whitespace-nowrap border border-gray-200">
-                  <div className="flex flex-col gap-1 justify-center items-center">
-                    <span
-                      onClick={() => handleAddtoCart(item)}
-                      className="bg-black w-fit px-6 py-2 text-xl text-white cursor-pointer hover:opacity-80"
-                    >
-                      {" "}
-                      <CiShoppingCart />
-                    </span>
-                    <span
-                      onClick={() => handleRemoveFromWishList(item)}
-                      className="bg-red-600 w-fit px-6 py-2 text-xl text-white cursor-pointer hover:opacity-80"
-                    >
-                      {" "}
-                      <MdOutlineDeleteOutline />
-                    </span>
-                  </div>
+            {userwishList.length < 1 ? (
+              // Render a message indicating zero wishlist items
+              <tr>
+                <td colSpan={5} className="p-3 text-center">
+                  You have zero items in your wishlist.
                 </td>
               </tr>
-            ))}
+            ) : (
+              // If the wishlist is not empty, map through cart items and generate table rows
+              userwishList.map((item: WishListItem, index: number) => (
+                <tr key={index} className="border-b border-gray-200">
+                  <td className="p-3 whitespace-nowrap border border-gray-200">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="md:w-[120px] md:h-[120px] object-cover"
+                    />
+                  </td>
+                  <td className="p-3 whitespace-nowrap border border-gray-200">
+                    {item.name}
+                  </td>
+                  <td className="p-3 whitespace-nowrap border border-gray-200">
+                    {item.productId}
+                  </td>
+                  <td className="p-3 whitespace-nowrap border border-gray-200">
+                    ${item.price}
+                  </td>
+                  <td className="p-3 whitespace-nowrap border border-gray-200">
+                    <div className="flex flex-col gap-1 justify-center items-center">
+                      <span
+                        onClick={() => handleAddtoCart(item)}
+                        className="bg-black w-fit px-6 py-2 text-xl text-white cursor-pointer hover:opacity-80"
+                      >
+                        {" "}
+                        <CiShoppingCart />
+                      </span>
+                      <span
+                        onClick={() => handleRemoveFromWishList(item)}
+                        className="bg-red-600 w-fit px-6 py-2 text-xl text-white cursor-pointer hover:opacity-80"
+                      >
+                        {" "}
+                        <MdOutlineDeleteOutline />
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

@@ -1,32 +1,42 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CiShoppingCart } from "react-icons/ci";
-import { CiSearch } from "react-icons/ci";
 import { IoMenu } from "react-icons/io5";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import MobileNav from "./MobileNav";
 import AccountCard from "./AccountCard";
 import { NAV_LINKS } from "../constants";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getTotals } from "../redux/user/cartSlice";
+
 import CartCard from "./CartCard";
+import Search from "./Search";
+import useUserCart from "./UserCart";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
-  const { cartTotalQuantity } = useSelector((state) => state.cart);
-
-  const cart = useSelector((state) => state.cart);
-  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user);
+  const cart = useSelector((state: RootState) => state.cart);
   console.log(cart);
-  useEffect(() => {
-    dispatch(getTotals());
-  }, [cart, dispatch]);
 
   const [openMobileNav, setOpenMobileNav] = useState(false);
   const [openAccountCard, setOpenAccountCard] = useState(false);
   const [openCartCard, setOpenCartCard] = useState(false);
+  const [openSearchInput, setOpenSearchInput] = useState(false);
+  const { userCart } = useUserCart();
+
+  console.log(userCart);
+  const Initials =
+    user?.currentUser?.firstName?.slice(0, 1) +
+    user?.currentUser?.lastName?.slice(0, 1);
+
+  const AvatarInitials = () => (
+    <div className="bg-gray-300 text-center flex justify-center items-center  rounded-full w-[40px] h-[40px] ">
+      <span className="text-sm uppercase">{Initials}</span>
+    </div>
+  );
+
   return (
     <>
       <div className="bg-white h-[100px] sticky top-0 z-50  shadow-xl flex items-center justify-between md:justify-around gap-10 px-8 overflow-hidden">
@@ -50,14 +60,15 @@ const Navbar = () => {
           ))}
         </div>
         <div className="flex gap-5 md:gap-8 text-3xl items-center">
-          <span className="cursor-pointer hover:text-gray-300">
-            <CiSearch />
-          </span>
           <span
             className="cursor-pointer hover:text-gray-300"
             onClick={() => setOpenAccountCard(!openAccountCard)}
           >
-            <MdOutlineManageAccounts />
+            {user.currentUser !== null ? (
+              AvatarInitials()
+            ) : (
+              <MdOutlineManageAccounts />
+            )}
           </span>
           <div className="flex gap-1 items-center">
             <span
@@ -66,7 +77,7 @@ const Navbar = () => {
             >
               <CiShoppingCart />
             </span>
-            <span className="text-sm">({cartTotalQuantity})</span>
+            <span className="text-sm">({cart?.cartItems?.length})</span>
           </div>
         </div>
       </div>
@@ -76,8 +87,16 @@ const Navbar = () => {
           setOpenMobileNav={setOpenMobileNav}
         />
       )}
-      {openAccountCard && <AccountCard />}
-      {openCartCard && <CartCard openCartCard={openCartCard} />}
+      {openAccountCard && (
+        <AccountCard setOpenAccountCard={setOpenAccountCard} />
+      )}
+      {openCartCard && (
+        <CartCard
+          openCartCard={openCartCard}
+          setOpenCartCard={setOpenCartCard}
+        />
+      )}
+      {openSearchInput && <Search setOpenSearchInput={setOpenSearchInput} />}
     </>
   );
 };

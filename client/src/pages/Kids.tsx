@@ -1,6 +1,6 @@
 import { KidsProductsData, SlideData } from "../constants";
 import { useState } from "react";
-import { addToCart } from "../redux/user/cartSlice";
+import { addToCartSlice } from "../redux/user/cartSlice";
 import { addToWishlist } from "../redux/user/wishListSlice";
 import KidsSubBg from "../assets/kids/kidsubBg.jpg";
 import KidsBg from "../assets/leon-elldot-C8Q_zR8PDlA-unsplash.jpg";
@@ -27,7 +27,7 @@ const Kids = () => {
         bgImage={KidsBg}
         Bgtitle="Kids"
         subBgImage={KidsSubBg}
-        handleAddToCart={addToCart}
+        handleAddToCart={addToCartSlice}
         handleAddToWishlist={addToWishlist}
         handleQuickView={(index: number) => handleQuickView(index)}
       />

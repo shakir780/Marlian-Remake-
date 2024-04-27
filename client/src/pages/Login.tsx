@@ -107,7 +107,7 @@ const Login = () => {
                 <input
                   id="password"
                   className="border border-gray-300 w-[300px]  h-[38px] rounded-lg"
-                  type="text"
+                  type="password"
                   onChange={handleChange}
                 />
               </div>

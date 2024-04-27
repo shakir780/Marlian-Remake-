@@ -1,6 +1,6 @@
 import { MensProductData, SlideData } from "../constants";
 import { useState } from "react";
-import { addToCart } from "../redux/user/cartSlice";
+import { addToCartSlice } from "../redux/user/cartSlice";
 import { addToWishlist } from "../redux/user/wishListSlice";
 import MenSubBg from "../assets/Men/MenSubBg.webp";
 import MensBg from "../assets/leon-elldot-C8Q_zR8PDlA-unsplash.jpg";
@@ -27,7 +27,7 @@ const Men = () => {
         bgImage={MensBg}
         Bgtitle="Men"
         subBgImage={MenSubBg}
-        handleAddToCart={addToCart}
+        handleAddToCart={addToCartSlice}
         handleAddToWishlist={addToWishlist}
         handleQuickView={(index: number) => handleQuickView(index)}
       />

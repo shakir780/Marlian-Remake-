@@ -1,6 +1,6 @@
 import { WomenProductsData, SlideData } from "../constants";
 import { useState } from "react";
-import { addToCart } from "../redux/user/cartSlice";
+import { addToCartSlice } from "../redux/user/cartSlice";
 import { addToWishlist } from "../redux/user/wishListSlice";
 import WomenSubBg from "../assets/women/WomenSubBG.jpg";
 import WomenBG from "../assets/leon-elldot-C8Q_zR8PDlA-unsplash.jpg";
@@ -27,9 +27,9 @@ const Women = () => {
         Of African Clothing."
         data={WomenProductsData}
         bgImage={WomenBG}
-        Bgtitle="Kids"
+        Bgtitle="Women"
         subBgImage={WomenSubBg}
-        handleAddToCart={addToCart}
+        handleAddToCart={addToCartSlice}
         handleAddToWishlist={addToWishlist}
         handleQuickView={(index: number) => handleQuickView(index)}
       />

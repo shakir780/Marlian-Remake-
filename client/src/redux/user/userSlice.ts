@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 
 const initialState = {
   currentUser: null,
   error: null,
   loading: false,
   openQuickView: false,
+  searchResult: [],
 };
 
 const userSlice = createSlice({
@@ -15,10 +17,16 @@ const userSlice = createSlice({
       state.loading = true;
     },
     signInSuccess: (state, action) => {
+      toast.success("Welcome back", {
+        position: "bottom-left",
+      });
       state.currentUser = action.payload;
       state.loading = false;
     },
-    signInFailure: (state) => {
+    signInFailure: (state, action) => {
+      toast.error(action.payload, {
+        position: "bottom-left",
+      });
       state.currentUser = null;
       state.loading = false;
       state.error = null;
@@ -27,17 +35,38 @@ const userSlice = createSlice({
       state.loading = true;
     },
     signUpSuccess: (state, action) => {
+      toast.success("Welcome", {
+        position: "bottom-left",
+      });
       state.currentUser = action.payload;
       state.loading = false;
       state.error = null;
     },
-    signUpFailure: (state) => {
+    signUpFailure: (state, action) => {
+      toast.error(action.payload, {
+        position: "bottom-left",
+      });
       state.currentUser = null;
       state.loading = false;
       state.error = null;
     },
+    signOutSuccess: (state) => {
+      toast.success("Logged Out", {
+        position: "bottom-left",
+      });
+      state.currentUser = null;
+      state.loading = false;
+      state.error = null;
+    },
+    signOutFailure: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
     setOpenQuickView: (state, action) => {
       state.openQuickView = action.payload;
+    },
+    setSearchResult: (state, action) => {
+      state.searchResult = action.payload;
     },
   },
 });
@@ -49,6 +78,9 @@ export const {
   signUpFailure,
   signInFailure,
   setOpenQuickView,
+  setSearchResult,
+  signOutSuccess,
+  signOutFailure,
 } = userSlice.actions;
 
 export default userSlice.reducer;

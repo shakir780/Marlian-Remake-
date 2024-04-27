@@ -1,18 +1,27 @@
 import { CiHeart, CiStar } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/user/cartSlice";
-import { addToWishlist } from "../redux/user/wishListSlice";
+import useUserCart from "./UserCart";
+import UserWishlist from "./UserWishlist";
 
 interface QuickViewProps {
   slidesData: {
+    id: string;
     img: string;
     title: string;
     brand: string;
     productCode: string;
-    price: string;
+    price: number;
   };
   setOpenQuickView: (open: boolean) => void;
+}
+interface Product {
+  id: string; // Add this line
+  img: string;
+  title: string;
+  brand: string;
+  productCode: string;
+  price: number;
 }
 
 const QuickView: React.FC<QuickViewProps> = ({
@@ -20,12 +29,13 @@ const QuickView: React.FC<QuickViewProps> = ({
   setOpenQuickView,
 }) => {
   const dispatch = useDispatch();
-
-  const handleAddtoCart = (product) => {
-    dispatch(addToCart(product));
+  const { addToCart } = useUserCart();
+  const { addtoWishList } = UserWishlist();
+  const handleAddtoCart = async (product: Product) => {
+    await addToCart(product);
   };
-  const handleAddtoWishList = (product) => {
-    dispatch(addToWishlist(product));
+  const handleAddtoWishList = async (product: Product) => {
+    await addtoWishList(product);
   };
 
   return (

@@ -9,15 +9,20 @@ import { CiHeart, CiShoppingCart, CiStar } from "react-icons/ci";
 import { FaEye } from "react-icons/fa";
 import QuickView from "./QuickView";
 import { NewProductsData, SlideData } from "../constants";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/user/cartSlice";
-import { addToWishlist } from "../redux/user/wishListSlice";
+import useUserCart from "./UserCart";
+import UserWishlist from "./UserWishlist";
+
+import { useSelector } from "react-redux";
 const NewProducts = () => {
-  const dispatch = useDispatch();
+  const { addToCart } = useUserCart();
+  const { addtoWishList } = UserWishlist();
+
   const [slidesPerView, setSlidesPerView] = useState(3);
   const [slidesData, setSlidesData] = useState<SlideData>(null);
   const [openQuickView, setOpenQuickView] = useState(false);
-
+  const user = useSelector((state) => state.user);
+  const cart = useSelector((state) => state.cart);
+  console.log(cart);
   const goNext = () => {
     if (swiperRef.current) {
       if (swiperRef.current.isEnd) {
@@ -64,15 +69,16 @@ const NewProducts = () => {
     // dispatch(setOpenQuickView(true));
     setOpenQuickView(true);
     const clickedSlide = NewProductsData[index];
-    console.log("clickedd oo");
+    console.log(clickedSlide);
     setSlidesData(clickedSlide);
   };
 
-  const handleAddtoCart = (product) => {
-    dispatch(addToCart(product));
+  const handleAddtoCart = async (product) => {
+    console.log(product);
+    await addToCart(product);
   };
-  const handleAddtoWishList = (product) => {
-    dispatch(addToWishlist(product));
+  const handleAddtoWishList = async (productData) => {
+    await addtoWishList(productData);
   };
   return (
     <div className="max-w-[1460px] h-fit py-20 mx-auto flex flex-col gap-10  ">

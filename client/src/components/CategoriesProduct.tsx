@@ -5,7 +5,7 @@ import { CiHeart, CiShoppingCart, CiStar } from "react-icons/ci";
 import { FaEye } from "react-icons/fa";
 import { FaHouse } from "react-icons/fa6";
 import QuickView from "./QuickView";
-import { addToCart } from "../redux/user/cartSlice";
+import { addToCartSlice } from "../redux/user/cartSlice";
 import { addToWishlist } from "../redux/user/wishListSlice";
 
 interface Product {
@@ -106,7 +106,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
   const [slidesData, setSlidesData] = useState<Product | null>(null);
 
   const handleAddToCart = (product: Product) => {
-    dispatch(addToCart(product));
+    dispatch(addToCartSlice(product));
   };
 
   const handleAddToWishlist = (product: Product) => {

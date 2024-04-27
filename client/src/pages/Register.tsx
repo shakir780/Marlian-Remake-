@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import RegisterBg from "../assets/leon-elldot-C8Q_zR8PDlA-unsplash.jpg";
 import { FaHouse } from "react-icons/fa6";
+import { signUpFailure, signUpSuccess } from "../redux/user/userSlice";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   subscribe: boolean;
@@ -10,12 +14,14 @@ interface FormData {
   // Add other fields as needed
 }
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     subscribe: false,
     policy: false,
   });
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const dispatch = useDispatch();
+
+  const [, setLoading] = React.useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value =
@@ -25,12 +31,11 @@ const Register = () => {
       [e.target.id]: value,
     });
   };
-  console.log(formData.password === formData.confirmpassword);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (formData?.password !== formData?.confirmpassword) {
-      console.log("Password must match");
+      toast.error("Password must match");
     }
 
     try {
@@ -42,16 +47,18 @@ const Register = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (data.success === false) {
+      if (data.error) {
+        toast.error(data.error);
         setLoading(false);
-        setError(data.message);
         return;
       }
+      dispatch(signUpSuccess(data));
+      navigate("/");
       setLoading(false);
-      setError(null);
     } catch (error) {
+      console.log(error);
+      dispatch(signUpFailure((error as Error).message));
       setLoading(false);
-      setError((error as Error).message);
     }
   };
 

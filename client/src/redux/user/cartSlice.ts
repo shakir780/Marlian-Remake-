@@ -14,23 +14,20 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart(state, action) {
-      const itemIndex = state.cartItems.findIndex(
+    addToCartSlice(state, action) {
+      const existingItem = state.cartItems.find(
         (item) => item.id === action.payload.id
       );
 
-      if (itemIndex >= 0) {
-        state.cartItems[itemIndex].cartQuantity += 1;
-        toast.info(
-          `increased ${state.cartItems[itemIndex].title} product quantity`,
-          {
-            position: "bottom-left",
-          }
-        );
+      if (existingItem) {
+        existingItem.cartQuantity += 1;
+        toast.info(`Increased ${existingItem.title} product quantity`, {
+          position: "bottom-left",
+        });
       } else {
-        const tempProduct = { ...action.payload, cartQuantity: 1 };
-        state.cartItems.push(tempProduct);
-        toast.success(`${action.payload.title} added to cart`, {
+        const newProduct = { ...action.payload, cartQuantity: 1 };
+        state.cartItems.push(newProduct);
+        toast.success(`${newProduct.title} added to cart`, {
           position: "bottom-left",
         });
       }
@@ -101,31 +98,28 @@ const cartSlice = createSlice({
 
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
-    removeFromCart(state, action) {
-      state.cartItems.map((cartItem) => {
-        if (cartItem.id === action.payload.id) {
-          const nextCartItems = state.cartItems.filter(
-            (item) => item.id !== cartItem.id
-          );
+    removeFromCartSlice(state, action) {
+      const updatedCartItems = state.cartItems.filter(
+        (item) => item.id !== action.payload.id
+      );
 
-          state.cartItems = nextCartItems;
-
-          toast.error("Product removed from cart", {
-            position: "bottom-left",
-          });
-        }
-        localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
-        return state;
+      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+      toast.success("Product removed from cart", {
+        position: "bottom-left",
       });
+      return {
+        ...state,
+        cartItems: updatedCartItems,
+      };
     },
   },
 });
 export const {
-  addToCart,
+  addToCartSlice,
   getTotals,
   decreaseCart,
   increaseCart,
-  removeFromCart,
+  removeFromCartSlice,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

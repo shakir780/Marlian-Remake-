@@ -1,28 +1,110 @@
 import cartBG from "../assets/cartBg.webp";
 import { FaHouse } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { MdOutlineDeleteOutline } from "react-icons/md";
+import { Key, useEffect } from "react";
+import axios from "axios";
+import useUserCart from "../components/UserCart";
 import { useDispatch } from "react-redux";
-import {
-  decreaseCart,
-  increaseCart,
-  removeFromCart,
-} from "../redux/user/cartSlice";
+import { decreaseCart, increaseCart } from "../redux/user/cartSlice";
+
+interface CartItem {
+  _id: string;
+  image: string;
+  name: string;
+  productId: string;
+  quantity: number;
+  price: number;
+}
 
 const CartPage = () => {
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart);
-  console.log(cart);
-  const handleDecreaseCart = (product) => {
-    dispatch(decreaseCart(product));
+  const { removeFromCart, userCart, error, setUserCart } = useUserCart();
+  const handleDecreaseCart = async (product: CartItem) => {
+    try {
+      // Make a POST request to the decreaseCartQuantity endpoint with the cart item ID
+      const response = await axios.post(`/api/cart/decrease/${product._id}`);
+
+      // Update the userCart state with the updated cart data
+      setUserCart((prevCart) =>
+        prevCart?.map((item) =>
+          item._id === product._id
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+      );
+      if (response?.status === 200) {
+        console.log("increased");
+        dispatch(decreaseCart({ id: product?.productId }));
+      }
+
+      // Handle success response
+      console.log(response.data.message); // Log success message or update UI accordingly
+    } catch (error) {
+      // Handle error
+      console.error("Error decreasing cart item quantity:", error);
+    }
   };
-  const handleIncreaseCart = (product) => {
-    dispatch(increaseCart(product));
+
+  const handleIncreaseCart = async (productId: CartItem) => {
+    console.log(productId._id);
+    try {
+      // Make a POST request to the increaseCartQuantity endpoint with the cart item ID
+      const response = await axios.post(`/api/cart/increase/${productId._id}`);
+
+      // Update the userCart state with the updated cart data
+      setUserCart((prevCart) =>
+        prevCart.map((item) =>
+          item._id === productId._id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
+      if (response?.status === 200) {
+        console.log("increased");
+        dispatch(increaseCart({ id: productId?.productId }));
+      }
+
+      // Handle success response
+      console.log(response); // Log success message or update UI accordingly
+    } catch (error) {
+      // Handle error
+      console.error("Error increasing cart item quantity:", error);
+    }
   };
-  const handleRemoveFromCart = (product) => {
-    dispatch(removeFromCart(product));
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleRemoveFromCart = async (product: { _id: any }) => {
+    await removeFromCart(product);
+    // Optionally, you can perform additional actions after removing the product from the cart
   };
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching user cart:", error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (userCart) {
+      console.log("User Cart:", userCart);
+      // Do something with the userCart data
+    }
+  }, [userCart]);
+
+  let totalAmount = 0;
+
+  // Iterate over each item in the userCart array
+  userCart?.forEach((item: { quantity: number; price: number }) => {
+    // Calculate the subtotal for the current item
+    const subtotal = item.quantity * item.price;
+
+    // Add the subtotal to the total amount
+    totalAmount += subtotal;
+  });
+
+  // Now totalAmount variable holds the total amount
+  console.log("Total Amount:", totalAmount);
   return (
     <div className="h-fit ">
       <div className="relative flex flex-col items-center ">
@@ -61,58 +143,66 @@ const CartPage = () => {
             </tr>
           </thead>
           <tbody>
-            {/* Map through cart items and generate table rows */}
-            {cart.cartItems.map((item, index) => (
-              <tr key={index} className="border-b border-gray-200">
-                <td className="p-3  border border-gray-200">
-                  <img
-                    src={item.img}
-                    alt={item.title}
-                    className="w-[120px] h-[120px] object-cover"
-                  />
-                </td>
-                <td className="p-3  border border-gray-200">{item.title}</td>
-                <td className="p-3  border border-gray-200">
-                  {item.productCode}
-                </td>
-                <div className="flex px-3   gap-3 items-center mt-14">
-                  <div className="flex justify-center items-center gap-2">
-                    <button
-                      onClick={() => handleIncreaseCart(item)}
-                      className="bg-gray-500 px-3 py-2 text-white"
-                    >
-                      +
-                    </button>
-                    <td className="p-3  border border-gray-200">
-                      {item.cartQuantity}
-                    </td>
-                    <button
-                      onClick={() => handleDecreaseCart(item)}
-                      className="bg-gray-500 px-3 py-2 text-white"
-                    >
-                      -
-                    </button>
-                  </div>
-
-                  <span
-                    onClick={() => handleRemoveFromCart(item)}
-                    className="text-lg text-white bg-red-600 px-3 py-2 cursor-pointer hover:bg-red-500"
-                  >
-                    <MdOutlineDeleteOutline />
-                  </span>
-                </div>
-                <td className="p-3  border border-gray-200">${item.price}</td>
-                <td className="p-3  border border-gray-200">
-                  ${item.cartQuantity * item.price}
+            {userCart?.length < 1 ? (
+              // Render a message indicating zero wishlist items
+              <tr>
+                <td colSpan={5} className="p-3 text-center">
+                  You have zero items in your Cart.
                 </td>
               </tr>
-            ))}
+            ) : (
+              userCart?.map((item: CartItem, index: Key | null | undefined) => (
+                <tr key={index} className="border-b border-gray-200">
+                  <td className="p-3  border border-gray-200">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-[120px] h-[120px] object-cover"
+                    />
+                  </td>
+                  <td className="p-3  border border-gray-200">{item.name}</td>
+                  <td className="p-3  border border-gray-200">
+                    {item.productId}
+                  </td>
+                  <div className="flex px-3   gap-3 items-center mt-14">
+                    <div className="flex justify-center items-center gap-2">
+                      <button
+                        onClick={() => handleIncreaseCart(item)}
+                        className="bg-gray-500 px-3 py-2 text-white"
+                      >
+                        +
+                      </button>
+                      <td className="p-3  border border-gray-200">
+                        {item.quantity}
+                      </td>
+                      <button
+                        onClick={() => handleDecreaseCart(item)}
+                        className="bg-gray-500 px-3 py-2 text-white"
+                      >
+                        -
+                      </button>
+                    </div>
+
+                    <span
+                      onClick={() => handleRemoveFromCart(item)}
+                      className="text-lg text-white bg-red-600 px-3 py-2 cursor-pointer hover:bg-red-500"
+                    >
+                      <MdOutlineDeleteOutline />
+                    </span>
+                  </div>
+                  <td className="p-3  border border-gray-200">${item.price}</td>
+                  <td className="p-3  border border-gray-200">
+                    ${item.quantity * item.price}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
         <div className="bg-gray-100 border w-[250px] h-fit py-4 shadow-xl mt-8 float-right  ">
           <div className="flex flex-col px-3  ">
             <span className="self-center font-semibold opacity-90">
-              {cart?.cartItems.length} items is in your bag
+              {userCart?.length} items is in your bag
             </span>
             <div className="flex flex-col gap-4 px-4  mt-8 ">
               <div className="w-full h-[1px] bg-gray-400 " />
@@ -120,7 +210,7 @@ const CartPage = () => {
             </div>
             <div className="flex gap-3 px-3 justify-between py-3">
               <span className="font-bold">Subtotal :</span>
-              <span>${cart?.cartTotalAmount}</span>
+              <span>${totalAmount}</span>
             </div>
             <div className="flex flex-col gap-4 px-4  mt-8">
               <div className="w-full h-[1px] bg-gray-400 " />
@@ -128,7 +218,7 @@ const CartPage = () => {
             </div>
             <div className="flex gap-3 px-3 justify-between py-3">
               <span className="font-bold">Total :</span>
-              <span>${cart?.cartTotalAmount}</span>
+              <span>${totalAmount}</span>
             </div>
             <div className="w-full h-[1px] bg-gray-400 " />
             <div className="hover:bg-gray-500 cursor-pointer text-center text-white bg-black transition-all py-3 px-4 w-full">
