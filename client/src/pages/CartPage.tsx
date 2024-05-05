@@ -219,7 +219,7 @@ const CartPage = () => {
           </thead>
           <tbody>
             {userCart?.length < 1 ? (
-              // Render a message indicating zero wishlist items
+              // Render a message indicating zero wishlist itemss
               <tr>
                 <td colSpan={5} className="p-3 text-center">
                   {errorMessage || user?.currentUser === null
