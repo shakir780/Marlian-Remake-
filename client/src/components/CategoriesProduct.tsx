@@ -1,18 +1,24 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { CiHeart, CiShoppingCart, CiStar } from "react-icons/ci";
 import { FaEye } from "react-icons/fa";
 import { FaHouse } from "react-icons/fa6";
 import QuickView from "./QuickView";
-import { addToCartSlice } from "../redux/user/cartSlice";
-import { addToWishlist } from "../redux/user/wishListSlice";
+import useUserCart from "./UserCart";
+import { useAnimation, useInView, motion } from "framer-motion";
+import UserWishlist from "./UserWishlist";
 
 interface Product {
-  img: string;
+  quantity?: number;
+  cartQuantity?: number;
+  id: string;
+  _id?: string;
+  productId: number;
   title: string;
   price: number;
-  stars: number;
+  brand: string;
+  stars: string;
+  img: string;
 }
 interface HandleAddToCart {
   (product: Product): void;
@@ -37,8 +43,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
   handleAddToWishlist,
   handleQuickView,
 }) => {
+  const ref = useRef(null);
+  const inView = useInView(ref, {
+    once: true, // Trigger animation only once when it comes into view
+  });
   return (
-    <div className="flex flex-col items-center justify-center mt-8 gap-6">
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 0.8 }}
+      className="flex flex-col items-center justify-center mt-8 gap-6"
+    >
       <div className="overflow-hidden">
         <div className="relative overflow-hidden w-[296px] h-[368px] group">
           <img
@@ -80,7 +96,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <span className="capitalize text-sm">{product.title}</span>
         <span className="font-bold">${product.price}</span>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -101,22 +117,35 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
   bgImage,
   subBgImage,
 }) => {
-  const dispatch = useDispatch();
   const [openQuickView, setOpenQuickView] = useState(false);
   const [slidesData, setSlidesData] = useState<Product | null>(null);
+  const { addToCart } = useUserCart();
+  const { addtoWishList } = UserWishlist();
 
-  const handleAddToCart = (product: Product) => {
-    dispatch(addToCartSlice(product));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleAddtoCart = async (product: any) => {
+    await addToCart(product);
   };
 
-  const handleAddToWishlist = (product: Product) => {
-    dispatch(addToWishlist(product));
+  const handleAddToWishlist = async (product: Product) => {
+    await addtoWishList(product);
   };
 
   const handleQuickView = (product: Product) => {
     setOpenQuickView(true);
     setSlidesData(product);
   };
+
+  const controlsText = useAnimation();
+  const controlsImage = useAnimation();
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  useEffect(() => {
+    if (inView) {
+      controlsText.start({ opacity: 1, x: 0 });
+      controlsImage.start({ opacity: 1, x: 0 });
+    }
+  }, [inView, controlsText, controlsImage]);
 
   return (
     <>
@@ -142,8 +171,16 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
           </div>
         </div>
 
-        <div className="flex md:flex-row flex-col gap-2 justify-center  w-full">
-          <div className="flex flex-col w-full mt-8  justify-center gap-8 px-16">
+        <div
+          ref={ref}
+          className="flex md:flex-row flex-col gap-2 justify-center  w-full"
+        >
+          <motion.div
+            initial={{ opacity: 0, x: -100 }}
+            animate={controlsText}
+            transition={{ duration: 1 }}
+            className="flex flex-col w-full mt-8  justify-center gap-8 px-16"
+          >
             <div className="font-extrabold text-3xl lg:text-7xl  uppercase w-full ">
               <span>{title}</span>
             </div>
@@ -153,10 +190,15 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
             <span className="text-3xl font-semibold">
               Proudly Made in Nigeria!
             </span>
-          </div>
-          <div className="w-full">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={controlsImage}
+            transition={{ duration: 1 }}
+            className="w-full"
+          >
             <img src={subBgImage} className="w-full" />
-          </div>
+          </motion.div>
         </div>
 
         <div
@@ -166,7 +208,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
             <ProductCard
               key={index}
               product={product}
-              handleAddToCart={handleAddToCart}
+              handleAddToCart={handleAddtoCart}
               handleAddToWishlist={handleAddToWishlist}
               handleQuickView={handleQuickView}
             />

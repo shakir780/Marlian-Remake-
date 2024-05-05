@@ -886,6 +886,32 @@ export const MensProductData = [
     price: 39.0,
   },
 ];
+export const testimonies = [
+  {
+    quote:
+      "I stumbled upon this store while searching for authentic African fashion, and I'm so glad I did! The quality of the products exceeded my expectations, and the customer service was exceptional. I'll definitely be shopping here again.",
+    author: "Mr. Danail Smith",
+    position: "Designer",
+  },
+  {
+    quote:
+      "As a lover of African culture, I've always struggled to find unique pieces online until I found this store. The variety of products available is impressive, and I appreciate the attention to detail in each item. Plus, the shipping was quick and hassle-free!",
+    author: "Mr. Ezekiel John",
+    position: "Designer",
+  },
+  {
+    quote:
+      "I recently purchased a few items from this store for a special occasion, and I couldn't be happier with my decision. The craftsmanship of the products is outstanding, and I received numerous compliments when I wore them. Highly recommended!",
+    author: "Mr. Micheal Kennedy",
+    position: "Designer",
+  },
+  {
+    quote:
+      "I've been a loyal customer of this store for years, and I've never been disappointed. From clothing to home decor, they offer everything I need to add a touch of Africa to my life. The affordability and quality keep me coming back for more!",
+    author: "Mrs. Fatima Ismail",
+    position: "Designer",
+  },
+];
 
 export interface SlideData {
   img: string;

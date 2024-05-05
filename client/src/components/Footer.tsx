@@ -90,7 +90,7 @@ const Footer = () => {
             <span className="w-[50px] h-[1px] bg-gray-200 opacity-75"></span>
             <span className="w-[30px] h-[1px] bg-gray-200 opacity-75"></span>
           </div>
-          <div className=" text-white">
+          <div className="text-white">
             <span>
               Subscribe to our latest newsletter to get news about special
               discounts and upcoming sales
@@ -98,7 +98,7 @@ const Footer = () => {
           </div>
           <div>
             <input
-              className="md:w-[260px] w-full h-[50px] focus:outline-none px-6"
+              className=" w-full h-[50px] focus:outline-none px-2"
               placeholder="Enter an email address"
             />
             <div className="flex gap-3 text-white items-center justify-between py-4 text-xl">

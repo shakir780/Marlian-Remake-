@@ -77,7 +77,7 @@ const Navbar = () => {
             >
               <CiShoppingCart />
             </span>
-            <span className="text-sm">({cart?.cartItems?.length})</span>
+            {/* <span className="text-sm">({userCart?.length})</span> */}
           </div>
         </div>
       </div>

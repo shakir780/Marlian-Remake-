@@ -11,7 +11,6 @@ import Kids from "./pages/Kids";
 import Women from "./pages/Women";
 import Footer from "./components/Footer";
 import Men from "./pages/Men";
-import SearchResults from "./pages/SearchResults";
 import CheckoutSuccess from "./components/CheckoutSuccess";
 import NotFound from "./components/NotFound";
 
@@ -30,7 +29,6 @@ const App = () => {
         <Route element={<Kids />} path="/kids" />
         <Route element={<Women />} path="/women" />
         <Route element={<Men />} path="/men" />
-        <Route element={<SearchResults />} path="/search" />
         <Route element={<CheckoutSuccess />} path="/checkout-success" />
         <Route element={<NotFound />} path="*" />
       </Routes>

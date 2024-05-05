@@ -13,16 +13,20 @@ interface ProductData {
 }
 const UserWishlist = () => {
   const [userwishList, setUserWishList] = useState([]);
+  const [error, setError] = useState(undefined);
   const user = useSelector((state: RootState) => state.user);
   console.log(user);
+  console.log(userwishList);
   useEffect(() => {
     const fetchUserhWishList = async () => {
       try {
-        if (user) {
+        if (user?.currentUser !== null) {
           const response = await axios.get("/api/wishlist/get");
           setUserWishList(response.data);
         }
-      } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        setError(error);
         console.log("Wishlist: ", error);
       }
     };
@@ -39,17 +43,31 @@ const UserWishlist = () => {
         image: productData.img,
       });
 
-      console.log(response);
+      if (response.data.success && user?.currentUser !== null) {
+        toast.success(`${response.data.message}`, {
+          position: "bottom-left",
+        });
+        return response.data;
+      } else {
+        if (user?.currentUser === null) {
+          {
+            toast.error("Please Log In or Register to add to Wishlist", {
+              position: "bottom-left",
+            });
+          }
+        } else {
+          toast.error("Failed to add product to Wishlist", {
+            position: "bottom-left",
+          });
+        }
+      }
 
       // Optionally, you can return the response or any other data from here
-      toast.success(`${response.data.message}`, {
+    } catch (error) {
+      toast.error("Failed to add product to cart", {
         position: "bottom-left",
       });
-      return response.data;
-    } catch (error) {
-      console.error("Error adding product to wishlist:", error);
       // Optionally, you can throw the error or handle it in another way
-      throw error;
     }
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -79,7 +97,7 @@ const UserWishlist = () => {
       });
     }
   };
-  return { addtoWishList, userwishList, RemoveFromWishList };
+  return { addtoWishList, userwishList, RemoveFromWishList, error };
 };
 
 export default UserWishlist;

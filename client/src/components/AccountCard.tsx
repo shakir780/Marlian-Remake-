@@ -1,9 +1,21 @@
 import { useEffect, useRef } from "react";
-import { ACCOUNT_LINKS } from "../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { signOutFailure, signOutSuccess } from "../redux/user/userSlice";
 
-const AccountCard = ({ setOpenAccountCard }) => {
+interface AccountCardProps {
+  setOpenAccountCard: (open: boolean) => void;
+}
+interface UserState {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  currentUser: any; // Replace `any` with the actual type of your user object
+  // Add other properties of the user state here
+}
+
+interface RootState {
+  user: UserState;
+  // Add other top-level state properties here
+}
+const AccountCard = ({ setOpenAccountCard }: AccountCardProps) => {
   const dispatch = useDispatch();
 
   function useOutsideAlerter(ref: React.RefObject<HTMLElement>) {
@@ -24,7 +36,7 @@ const AccountCard = ({ setOpenAccountCard }) => {
 
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef);
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state: RootState) => state.user);
 
   const Logout = async () => {
     try {
@@ -40,7 +52,7 @@ const AccountCard = ({ setOpenAccountCard }) => {
     } catch (error) {
       console.log(error);
 
-      dispatch(signOutFailure(error.message));
+      dispatch(signOutFailure((error as Error).message));
     }
   };
 

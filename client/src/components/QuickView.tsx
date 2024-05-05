@@ -11,6 +11,7 @@ interface QuickViewProps {
     title: string;
     brand: string;
     productCode: string;
+    productId: number;
     price: number;
   };
   setOpenQuickView: (open: boolean) => void;
@@ -22,6 +23,7 @@ interface Product {
   brand: string;
   productCode: string;
   price: number;
+  productId: number;
 }
 
 const QuickView: React.FC<QuickViewProps> = ({

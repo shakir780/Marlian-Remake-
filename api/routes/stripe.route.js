@@ -12,7 +12,8 @@ router.post("/create-checkout-session", async (req, res) => {
   const customer = await stripe.customers.create({
     metadata: {
       userId: req.body.userId,
-      cart: JSON.stringify(req.body.cartItems),
+      cart: [],
+      additionalInfo: "Additional metadata that exceeds the limit",
     },
   });
   const line_items = req.body.cartItems.map((item) => {
@@ -20,15 +21,15 @@ router.post("/create-checkout-session", async (req, res) => {
       price_data: {
         currency: "usd",
         product_data: {
-          name: item.title,
+          name: item.name,
           images: [item.images],
           metadata: {
-            id: item.id,
+            id: item.productId,
           },
         },
         unit_amount: item.price * 100,
       },
-      quantity: item.cartQuantity,
+      quantity: item.quantity,
     };
   });
 

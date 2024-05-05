@@ -2,11 +2,14 @@ import cartBG from "../assets/cartBg.webp";
 import { FaHouse } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import { Key, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import axios from "axios";
 import useUserCart from "../components/UserCart";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { decreaseCart, increaseCart } from "../redux/user/cartSlice";
+import PayButton from "../components/PayButton";
+import { RootState } from "../redux/store";
+import { motion, useInView } from "framer-motion";
 
 interface CartItem {
   _id: string;
@@ -18,8 +21,12 @@ interface CartItem {
 }
 
 const CartPage = () => {
+  const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
   const { removeFromCart, userCart, error, setUserCart } = useUserCart();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const errorMessage = error?.response?.data?.message;
   const handleDecreaseCart = async (product: CartItem) => {
     try {
       // Make a POST request to the decreaseCartQuantity endpoint with the cart item ID
@@ -74,16 +81,10 @@ const CartPage = () => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleRemoveFromCart = async (product: { _id: any }) => {
+  const handleRemoveFromCart = async (product: any) => {
     await removeFromCart(product);
     // Optionally, you can perform additional actions after removing the product from the cart
   };
-
-  useEffect(() => {
-    if (error) {
-      console.error("Error fetching user cart:", error);
-    }
-  }, [error]);
 
   useEffect(() => {
     if (userCart) {
@@ -104,7 +105,81 @@ const CartPage = () => {
   });
 
   // Now totalAmount variable holds the total amount
-  console.log("Total Amount:", totalAmount);
+
+  const AnimatedTableRow = ({
+    item,
+    handleIncreaseCart,
+    handleDecreaseCart,
+    handleRemoveFromCart,
+  }: {
+    item: CartItem;
+    handleIncreaseCart: (product: CartItem) => void;
+    handleDecreaseCart: (product: CartItem) => void;
+    handleRemoveFromCart: (product: CartItem) => void; // Consider specifying a more precise type if possible
+  }) => {
+    const ref = useRef(null);
+    const inView = useInView(ref, {
+      once: true, // Trigger animation only once when it comes into view
+    });
+
+    // useEffect(() => {
+    //   if (inView) {
+    //     // Trigger animation when the row comes into view
+    //   }
+    // }, [inView]);
+
+    return (
+      <motion.tr
+        ref={ref}
+        initial={{ opacity: 0, y: 50 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+        transition={{ duration: 0.5 }}
+        className="border-b border-gray-200"
+      >
+        <td className="p-3 border border-gray-200">
+          <img
+            src={item.image}
+            alt={item.name}
+            className="w-[120px] h-[120px] object-cover"
+          />
+        </td>
+        <td className="p-3 border border-gray-200">{item.name}</td>
+        <td className="p-6 mt-6 border border-gray-200">{item.productId}</td>
+        <td className="p-3 border border-gray-200">
+          <div className="flex px-3 py-3  gap-3 items-center ">
+            <div className="flex justify-center items-center gap-2">
+              <button
+                onClick={() => handleIncreaseCart(item)}
+                className="bg-gray-500 px-3 py-2 text-white"
+              >
+                +
+              </button>
+              <td className="py-1 px-2 rounded-sm border border-gray-200">
+                {item.quantity}
+              </td>
+              <button
+                onClick={() => handleDecreaseCart(item)}
+                className="bg-gray-500 px-3 py-2 text-white"
+              >
+                -
+              </button>
+            </div>
+            <span
+              onClick={() => handleRemoveFromCart(item)}
+              className="text-lg text-white bg-red-600 px-3 py-2 cursor-pointer hover:bg-red-500"
+            >
+              <MdOutlineDeleteOutline />
+            </span>
+          </div>
+        </td>
+        <td className="p-3 border border-gray-200">${item.price}</td>
+        <td className="p-3 border border-gray-200">
+          ${item.quantity * item.price}
+        </td>
+      </motion.tr>
+    );
+  };
+
   return (
     <div className="h-fit ">
       <div className="relative flex flex-col items-center ">
@@ -147,54 +222,21 @@ const CartPage = () => {
               // Render a message indicating zero wishlist items
               <tr>
                 <td colSpan={5} className="p-3 text-center">
-                  You have zero items in your Cart.
+                  {errorMessage || user?.currentUser === null
+                    ? " Please Login to view your cart"
+                    : " You have zero items in your Cart."}
                 </td>
               </tr>
             ) : (
-              userCart?.map((item: CartItem, index: Key | null | undefined) => (
-                <tr key={index} className="border-b border-gray-200">
-                  <td className="p-3  border border-gray-200">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-[120px] h-[120px] object-cover"
-                    />
-                  </td>
-                  <td className="p-3  border border-gray-200">{item.name}</td>
-                  <td className="p-3  border border-gray-200">
-                    {item.productId}
-                  </td>
-                  <div className="flex px-3   gap-3 items-center mt-14">
-                    <div className="flex justify-center items-center gap-2">
-                      <button
-                        onClick={() => handleIncreaseCart(item)}
-                        className="bg-gray-500 px-3 py-2 text-white"
-                      >
-                        +
-                      </button>
-                      <td className="p-3  border border-gray-200">
-                        {item.quantity}
-                      </td>
-                      <button
-                        onClick={() => handleDecreaseCart(item)}
-                        className="bg-gray-500 px-3 py-2 text-white"
-                      >
-                        -
-                      </button>
-                    </div>
-
-                    <span
-                      onClick={() => handleRemoveFromCart(item)}
-                      className="text-lg text-white bg-red-600 px-3 py-2 cursor-pointer hover:bg-red-500"
-                    >
-                      <MdOutlineDeleteOutline />
-                    </span>
-                  </div>
-                  <td className="p-3  border border-gray-200">${item.price}</td>
-                  <td className="p-3  border border-gray-200">
-                    ${item.quantity * item.price}
-                  </td>
-                </tr>
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              userCart?.map((item: any, index) => (
+                <AnimatedTableRow
+                  key={index}
+                  item={item}
+                  handleIncreaseCart={handleIncreaseCart}
+                  handleDecreaseCart={handleDecreaseCart}
+                  handleRemoveFromCart={handleRemoveFromCart}
+                />
               ))
             )}
           </tbody>
@@ -222,7 +264,7 @@ const CartPage = () => {
             </div>
             <div className="w-full h-[1px] bg-gray-400 " />
             <div className="hover:bg-gray-500 cursor-pointer text-center text-white bg-black transition-all py-3 px-4 w-full">
-              <span>Checkout</span>
+              <PayButton cartItems={userCart} />
             </div>
           </div>
         </div>

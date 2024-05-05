@@ -1,23 +1,9 @@
-import { WomenProductsData, SlideData } from "../constants";
-import { useState } from "react";
-import { addToCartSlice } from "../redux/user/cartSlice";
-import { addToWishlist } from "../redux/user/wishListSlice";
+import { WomenProductsData } from "../constants";
 import WomenSubBg from "../assets/women/WomenSubBG.jpg";
 import WomenBG from "../assets/leon-elldot-C8Q_zR8PDlA-unsplash.jpg";
 import ProductsSection from "../components/CategoriesProduct";
 
 const Women = () => {
-  const [, setSlidesData] = useState<SlideData>(null);
-  const [, setOpenQuickView] = useState(false);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleQuickView = (index: number) => {
-    setOpenQuickView(true);
-    const clickedSlide = WomenProductsData[index];
-
-    setSlidesData(clickedSlide);
-  };
-
   return (
     <div className="pb-20">
       <ProductsSection
@@ -25,13 +11,11 @@ const Women = () => {
         description="RRelease Your African Spirit This
         Summer With Our Beautiful Range
         Of African Clothing."
-        data={WomenProductsData}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data={WomenProductsData as any}
         bgImage={WomenBG}
         Bgtitle="Women"
         subBgImage={WomenSubBg}
-        handleAddToCart={addToCartSlice}
-        handleAddToWishlist={addToWishlist}
-        handleQuickView={(index: number) => handleQuickView(index)}
       />
     </div>
   );

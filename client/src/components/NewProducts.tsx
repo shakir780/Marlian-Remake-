@@ -13,6 +13,7 @@ import useUserCart from "./UserCart";
 import UserWishlist from "./UserWishlist";
 
 import { useSelector } from "react-redux";
+import { useAnimation, motion, useInView } from "framer-motion";
 const NewProducts = () => {
   const { addToCart } = useUserCart();
   const { addtoWishList } = UserWishlist();
@@ -20,7 +21,6 @@ const NewProducts = () => {
   const [slidesPerView, setSlidesPerView] = useState(3);
   const [slidesData, setSlidesData] = useState<SlideData>(null);
   const [openQuickView, setOpenQuickView] = useState(false);
-  const user = useSelector((state) => state.user);
   const cart = useSelector((state) => state.cart);
   console.log(cart);
   const goNext = () => {
@@ -80,16 +80,38 @@ const NewProducts = () => {
   const handleAddtoWishList = async (productData) => {
     await addtoWishList(productData);
   };
+
+  const controlsText = useAnimation();
+  const controlsImage = useAnimation();
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  useEffect(() => {
+    if (inView) {
+      controlsText.start({ opacity: 1, x: 0 });
+      controlsImage.start({ opacity: 1, x: 0 });
+    }
+  }, [inView, controlsText, controlsImage]);
   return (
-    <div className="max-w-[1460px] h-fit py-20 mx-auto flex flex-col gap-10  ">
-      <div className="flex flex-col items-center gap-6">
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: -100 }}
+      animate={controlsText}
+      transition={{ duration: 1 }}
+      className="max-w-[1460px] h-fit py-20 mx-auto flex flex-col gap-10  "
+    >
+      <motion.div
+        initial={{ opacity: 0, x: -100 }}
+        animate={controlsText}
+        transition={{ duration: 1 }}
+        className="flex flex-col items-center gap-6"
+      >
         <span className="capitalize text-3xl md:text-4xl ">New Products</span>
         <div className="w-20 h-1 bg-black" />
-      </div>
+      </motion.div>
 
       <div
         className={`relative flex gap-2 ${
-          slidesPerView < 2 && "pl-10"
+          slidesPerView < 2 && "pl-9"
         }  pl-24 items-center`}
       >
         <Swiper
@@ -100,7 +122,12 @@ const NewProducts = () => {
         >
           {NewProductsData.map((slide, index) => (
             <SwiperSlide key={index}>
-              <div className="flex flex-col">
+              <motion.div
+                initial={{ opacity: 0, x: 100 }}
+                animate={controlsImage}
+                transition={{ duration: 1 }}
+                className="flex flex-col"
+              >
                 <div className="overflow-hidden">
                   <div className="relative overflow-hidden w-[296px] h-[368px] group">
                     <img
@@ -142,7 +169,7 @@ const NewProducts = () => {
                   <span className="capitalize">{slide.title}</span>
                   <span className="font-bold">${slide.price}</span>
                 </div>
-              </div>
+              </motion.div>
             </SwiperSlide>
           ))}
         </Swiper>
@@ -169,7 +196,7 @@ const NewProducts = () => {
           setOpenQuickView={setOpenQuickView}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 
