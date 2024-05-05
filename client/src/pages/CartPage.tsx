@@ -128,7 +128,10 @@ const CartPage = () => {
     //     // Trigger animation when the row comes into view
     //   }
     // }, [inView]);
+    const baseURL = "https://marlian-clothing.onrender.com"; // Replace this with your server's base URL
+    const imageURL = `${baseURL}${item.image}`;
 
+    console.log(item.image);
     return (
       <motion.tr
         ref={ref}
@@ -139,7 +142,7 @@ const CartPage = () => {
       >
         <td className="p-3 border border-gray-200">
           <img
-            src={item.image}
+            src={imageURL}
             alt={item.name}
             className="w-[120px] h-[120px] object-cover"
           />
