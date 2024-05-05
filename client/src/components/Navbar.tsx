@@ -11,7 +11,6 @@ import { NAV_LINKS } from "../constants";
 import { Link } from "react-router-dom";
 
 import CartCard from "./CartCard";
-import Search from "./Search";
 import useUserCart from "./UserCart";
 import { useSelector } from "react-redux";
 
