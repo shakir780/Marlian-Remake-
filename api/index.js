@@ -26,8 +26,10 @@ app.use("/api/stripe", stripe);
 app.use;
 
 app.use(express.static(path.join(__dirname, "/client/dist")));
+app.use(express.static("public"));
+
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "/client", "dist", "index.html"));
+  res.sendFile(path.join(__dirname, "assets", "/client", "dist", "index.html"));
 });
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
