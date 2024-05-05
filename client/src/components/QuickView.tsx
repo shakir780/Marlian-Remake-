@@ -34,7 +34,8 @@ const QuickView: React.FC<QuickViewProps> = ({
   const { addToCart } = useUserCart();
   const { addtoWishList } = UserWishlist();
   const handleAddtoCart = async (product: Product) => {
-    await addToCart(product);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await addToCart(product as any);
   };
   const handleAddtoWishList = async (product: Product) => {
     await addtoWishList(product);
