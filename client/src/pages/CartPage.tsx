@@ -24,6 +24,7 @@ const CartPage = () => {
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
   const { removeFromCart, userCart, error, setUserCart } = useUserCart();
+  console.log(userCart);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const errorMessage = error?.response?.data?.message;
